@@ -1,0 +1,15 @@
+machine:
+    timezone: 
+        Asia/Tokyo
+dependencies:
+    cache_directories:
+         - "~/lib"
+    pre:
+        - ./mecab_install.sh
+        - CGO_LDFLAGS="`mecab-config --libs`" CGO_FLAGS="`mecab-config --inc-dir`" go get -v github.com/bluele/mecab-golang
+test:
+    pre: 
+        - go vet ./...
+    override:
+        - CGO_LDFLAGS="`mecab-config --libs`" CGO_FLAGS="`mecab-config --inc-dir`" go test -v -race ./...
+            
