@@ -8,8 +8,11 @@ dependencies:
         - ./mecab_install.sh
         - CGO_LDFLAGS="`mecab-config --libs`" CGO_FLAGS="`mecab-config --inc-dir`" go get -v github.com/bluele/mecab-golang
 test:
-    pre: 
+    pre:
+        - go get github.com/mattn/goveralls
+        - go get golang.org/x/tools/cmd/cover
         - go vet ./...
     override:
-        - CGO_LDFLAGS="`mecab-config --libs`" CGO_FLAGS="`mecab-config --inc-dir`" go test -v -race ./...
-            
+        - CGO_LDFLAGS="`mecab-config --libs`" CGO_FLAGS="`mecab-config --inc-dir`" go test -v -cover -race -coverprofile=coverage.out
+    post:
+        - goveralls -coverprofile=coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN           
