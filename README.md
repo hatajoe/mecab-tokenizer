@@ -8,12 +8,12 @@
 This is under development
 ```
 
-mecab-tokenizer is text tokenizer wrapped bluele/mecab-golang
+mecab-tokenizer is text tokenizer wrapped ikawaha/kagome
 
 ## Dependencies
 
 - [MeCab: Yet Another Part-of-Speech and Morphological Analyzer](https://mecab.googlecode.com/svn/trunk/mecab/doc/index.html#install)
-- [bluele/mecab-golang: A golang wrapper for mecab.](https://github.com/bluele/mecab-golang)
+- [ikawaha/kagome: Self-contained Japanese Morphological Analyzer written in pure golang](https://github.com/ikawaha/kagome)
 
 Please install it
 
@@ -30,21 +30,12 @@ package main
 
 import (
     "fmt"
+
     "github.com/hatajoe/mecab-tokenizer"
 )
 
 func main() {
-    myTokenizer, err := tokenizer.NewTokenizer()
-    if err != nil {
-        panic(err)
-    }
-    if err := myTokenizer.Tokenize(
-        "すもももももももものうち。", 
-        tokenizer.OnParsed(func (n *tokenizer.Node) error {
-            fmt.Println(n.DistinctNoun().Sort()) // [うち すもも もも]
-        }),
-    ); err != nil {
-        panic(err)
-    }
+	tokens := tokenizer.NewTokenizer().Tokenize("すもももももももものうち。").DistinctByNoun().Sort()
+    fmt.Println(tokens) // [うち(10, 12)KNOWN[8024] すもも(0, 3)KNOWN[36163] もも(4, 6)KNOWN[74989]]
 }
 ```

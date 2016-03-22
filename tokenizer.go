@@ -2,9 +2,8 @@ package tokenizer
 
 import (
 	"sort"
-	"strings"
 
-	"github.com/bluele/mecab-golang"
+	"github.com/ikawaha/kagome/tokenizer"
 )
 
 const (
@@ -12,86 +11,45 @@ const (
 	featureTypeNounKey    = "名詞"
 )
 
-// Tokenizer is mecab-golang wrapper
+// Tokenizer is kagome.Tokenizer wrapper
 type Tokenizer struct {
-	m *mecab.MeCab
-	t *mecab.Tagger
+	t tokenizer.Tokenizer
 }
 
-type OnParsed func (*Node) error
-
-// NewTokenizer initialize mecab-golang
-func NewTokenizer(opt ...string) (*Tokenizer, error) {
-	m, err := mecab.New(opt...)
-	if err != nil {
-		return nil, err
-	}
-	t, err := m.NewTagger()
-	if err != nil {
-		return nil, err
-	}
+// NewTokenizer initialize kagome.Tokenizer
+func NewTokenizer(opt ...string) *Tokenizer {
 	return &Tokenizer{
-		m: m,
-		t: t,
-	}, nil
-}
-
-// Destroy tokenizer
-func (m *Tokenizer) Destroy() {
-	if m.m != nil {
-		m.m.Destroy()
-	}
-	if m.t != nil {
-		m.t.Destroy()
+		t: tokenizer.New(),
 	}
 }
 
-// Tokenize create *mecab.Lattice and call OnParsed with *Node args
-func (m *Tokenizer) Tokenize(text string, cb OnParsed) error {
-	lt, err := m.m.NewLattice(text)
-	if err != nil {
-		return err
-	}
-	defer lt.Destroy()
-	if cb != nil {
-		if err := cb(&Node{m.t.ParseToNode(lt)}); err != nil {
-			return err
-		}
-	}
-	return nil
+// Tokenize create []kagome.Token
+func (m *Tokenizer) Tokenize(text string) Tokens {
+	return Tokens(m.t.Tokenize(text))
 }
 
-// Node is alias of *mecab.Node
-type Node struct {
-	*mecab.Node
-}
+// Tokens is tokenizer.Token wrapper
+type Tokens []tokenizer.Token
 
-// DistinctNoun return distinct noun surfaces
-func (m *Node) DistinctNoun() (nouns Tokens) {
-	distinctNouns := map[string]bool{}
-	for {
-		if m.Next() == mecab.StopIteration {
-			break
-		}
-		features := strings.Split(m.Feature(), ",")
-		if len(features) <= 0 {
+// DistinctByNoun return Tokens distinct by nouns
+func (m Tokens) DistinctByNoun() (tokens Tokens) {
+	distinctByNouns := map[string]bool{}
+	for _, token := range m {
+		if token.Class == tokenizer.DUMMY {
 			continue
 		}
-		if features[featureTypeTokenIndex] != featureTypeNounKey {
+		if token.Pos() != featureTypeNounKey {
 			continue
 		}
-		if _, ok := distinctNouns[m.Surface()]; !ok {
-			distinctNouns[m.Surface()] = true
-			nouns = append(nouns, m.Surface())
+		if _, ok := distinctByNouns[token.Surface]; !ok {
+			distinctByNouns[token.Surface] = true
+			tokens = append(tokens, token)
 		}
 	}
-	return nouns
+	return
 }
 
-// Tokens is node surfaces
-type Tokens []string
-
-// Sort as mecab.Node.Surface ASC
+// Sort as kagome.Token.Surface ASC
 func (m Tokens) Sort() Tokens {
 	sort.Sort(&m)
 	return m
@@ -109,5 +67,5 @@ func (m Tokens) Swap(i, j int) {
 
 // Less is implementation of sort.Sort
 func (m Tokens) Less(i, j int) bool {
-	return m[i] < m[j]
+	return m[i].Surface < m[j].Surface
 }
