@@ -1,14 +1,14 @@
-# mecab-tokenizer
+# text-tokenizer
 
-[![GoDoc](https://godoc.org/github.com/hatajoe/mecab-tokenizer?status.svg)](https://godoc.org/github.com/hatajoe/mecab-tokenizer)
-[![Circle CI](https://circleci.com/gh/hatajoe/mecab-tokenizer.svg?style=svg)](https://circleci.com/gh/hatajoe/mecab-tokenizer)
-[![Coverage Status](https://coveralls.io/repos/github/hatajoe/mecab-tokenizer/badge.svg?branch=master)](https://coveralls.io/github/hatajoe/mecab-tokenizer?branch=master)
+[![GoDoc](https://godoc.org/github.com/hatajoe/text-tokenizer?status.svg)](https://godoc.org/github.com/hatajoe/text-tokenizer)
+[![Circle CI](https://circleci.com/gh/hatajoe/text-tokenizer.svg?style=svg)](https://circleci.com/gh/hatajoe/text-tokenizer)
+[![Coverage Status](https://coveralls.io/repos/github/hatajoe/text-tokenizer/badge.svg?branch=master)](https://coveralls.io/github/hatajoe/text-tokenizer?branch=master)
 
 ```
 This is under development
 ```
 
-mecab-tokenizer is text tokenizer wrapped ikawaha/kagome
+text-tokenizer is text tokenizer wrapped ikawaha/kagome
 
 ## Dependencies
 
@@ -31,7 +31,7 @@ package main
 import (
     "fmt"
 
-    "github.com/hatajoe/mecab-tokenizer"
+    "github.com/hatajoe/text-tokenizer"
 )
 
 func main() {
